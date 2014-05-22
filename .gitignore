@@ -1,3 +1,9 @@
 win32/*
 !win32/Debug/
 !win32/Release/
+agwiazda/*.sdf
+agwizada/agwiazda.v12.suo
+agwiazda/*.user
+agwiazda/Debug/
+agwiazda/Release/
+WORKDIR/*.dll
