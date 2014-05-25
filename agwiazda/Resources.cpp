@@ -2,12 +2,57 @@
 
 Resource::Resource()
 {
-	//TO DO
+	sf::Sprite *sprite = nullptr;
+	sf::Texture *texture = new sf::Texture();
+	puts("Creating Resource instance!");
+
+	if (texture->loadFromFile("blank.png"))
+	{
+		m_textures[NO_TEXTURE] = texture;
+		sprite = new sf::Sprite();
+		sprite->setTexture(*texture);
+		m_sprites[NO_SPRITE] = sprite;
+		texture = new sf::Texture();
+	}
+	else puts("Could not load texture blank.png!!!");
+
+	if (texture->loadFromFile("path.png"))
+	{
+		m_textures[TEX_PATH] = texture;
+		sprite = new sf::Sprite();
+		sprite->setTexture(*texture);
+		m_sprites[SPR_PATH] = sprite;
+		texture = new sf::Texture();
+	}
+	else puts("Could not load texture path.png!!!");
+
+	if (texture->loadFromFile("collider.png"))
+	{
+		m_textures[TEX_COLLIDER] = texture;
+		sprite = new sf::Sprite();
+		sprite->setTexture(*texture);
+		m_sprites[SPR_COLLIDER] = sprite;
+		texture = new sf::Texture();
+	}
+	else puts("Could not load texture collider.png!!!");
+
+	delete texture;
 }
 
 Resource::~Resource()
 {
-	//TO DO
+	for (map<SPRITES, sf::Sprite *>::iterator i = m_sprites.begin(); i != m_sprites.end(); ++i)
+	{
+		delete i->second;
+	}
+
+	for (map<TEXTURES, sf::Texture*>::iterator i = m_textures.begin(); i != m_textures.end(); ++i)
+	{
+		delete i->second;
+	}
+
+	m_sprites.clear();
+	m_textures.clear();
 }
 
 sf::Texture &Resource::getTexture(TEXTURES t)

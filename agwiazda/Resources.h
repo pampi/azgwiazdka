@@ -8,9 +8,13 @@ class Resource : public TSingleton<Resource>
 public:
 	enum TEXTURES {
 		NO_TEXTURE,
+		TEX_PATH,
+		TEX_COLLIDER,
 	};
 	enum SPRITES {
 		NO_SPRITE,
+		SPR_PATH,
+		SPR_COLLIDER,
 	};
 
 	Resource();
