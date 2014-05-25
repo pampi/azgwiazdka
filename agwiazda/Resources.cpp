@@ -36,6 +36,16 @@ Resource::Resource()
 	}
 	else puts("Could not load texture collider.png!!!");
 
+	if (texture->loadFromFile("finish.png"))
+	{
+		m_textures[TEX_FINISH] = texture;
+		sprite = new sf::Sprite();
+		sprite->setTexture(*texture);
+		m_sprites[SPR_FINISH] = sprite;
+		texture = new sf::Texture();
+	}
+	else puts("Could not load texture finish.png!!!");
+
 	delete texture;
 }
 

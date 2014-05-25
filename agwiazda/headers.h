@@ -13,6 +13,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <map>
+#include <vector>
 
 using namespace std;
 
@@ -20,5 +21,8 @@ using namespace std;
 #include "TSingleton.h"
 #include "Application.h"
 #include "Resources.h"
+#include "Level.h"
+
+#define SQUARE_SIZE 10
 
 #endif
