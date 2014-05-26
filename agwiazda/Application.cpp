@@ -31,8 +31,7 @@ void Application::run()
 		}
 
 		m_window->clear();
-		mouse = sf::Mouse::getPosition() - m_window->getPosition();
-		mouse.y -= GetSystemMetrics(SM_CYCAPTION);
+		mouse = sf::Mouse::getPosition(*m_window);
 
 		switch (m_state)
 		{
@@ -59,7 +58,7 @@ void Application::run()
 		m_level->draw(*m_window, (m_state == SET_COLLIDER) ? true : false);
 		m_window->display();
 
-		Sleep(10);
+		sf::sleep(sf::milliseconds(10));
 	}
 }
 
@@ -121,8 +120,7 @@ void Application::handleKeyEvent()
 
 void Application::handleMouseEvent()
 {
-	sf::Vector2i mouse = sf::Mouse::getPosition() - m_window->getPosition();
-	mouse.y -= GetSystemMetrics(SM_CYCAPTION);
+	sf::Vector2i mouse = sf::Mouse::getPosition(*m_window);
 
 	switch (m_state)
 	{
