@@ -36,7 +36,7 @@ void Application::run()
 		switch (m_state)
 		{
 		case SET_START:
-			drawing_sprite = res->getSprite(Resource::SPR_PATH);
+			drawing_sprite = res->getSprite(Resource::SPR_START);
 			drawing_sprite.setPosition((float)(mouse.x / SQUARE_SIZE) * SQUARE_SIZE, (float)(mouse.y / SQUARE_SIZE) * SQUARE_SIZE);
 			m_window->draw(drawing_sprite);
 			break;
@@ -54,6 +54,7 @@ void Application::run()
 		if (!m_pause)
 		{
 			m_level->tick();	//calculating and moving A*
+			m_pause = true;
 		}
 		m_level->draw(*m_window, (m_state == SET_COLLIDER) ? true : false);
 		m_window->display();
@@ -111,7 +112,8 @@ void Application::handleKeyEvent()
 		m_addCollider = (m_addCollider) ? false : true;
 		break;
 	case sf::Keyboard::Space:
-		m_pause = (m_pause) ? false : true;
+		//m_pause = (m_pause) ? false : true;
+		m_pause = false;
 		break;
 	default:
 		break;

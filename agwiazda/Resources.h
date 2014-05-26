@@ -10,13 +10,17 @@ public:
 		NO_TEXTURE,
 		TEX_PATH,
 		TEX_COLLIDER,
-		TEX_FINISH
+		TEX_START,
+		TEX_FINISH,
+		TEX_VISITED,
 	};
 	enum SPRITES {
 		NO_SPRITE,
 		SPR_PATH,
 		SPR_COLLIDER,
+		SPR_START,
 		SPR_FINISH,
+		SPR_VISITED,
 	};
 
 	Resource();

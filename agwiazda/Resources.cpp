@@ -46,6 +46,26 @@ Resource::Resource()
 	}
 	else puts("Could not load texture finish.png!!!");
 
+	if (texture->loadFromFile("start.png"))
+	{
+		m_textures[TEX_START] = texture;
+		sprite = new sf::Sprite();
+		sprite->setTexture(*texture);
+		m_sprites[SPR_START] = sprite;
+		texture = new sf::Texture();
+	}
+	else puts("Could not load texture start.png!!!");
+
+	if (texture->loadFromFile("visited.png"))
+	{
+		m_textures[TEX_VISITED] = texture;
+		sprite = new sf::Sprite();
+		sprite->setTexture(*texture);
+		m_sprites[SPR_VISITED] = sprite;
+		texture = new sf::Texture();
+	}
+	else puts("Could not load texture visited.png!!!");
+
 	delete texture;
 }
 

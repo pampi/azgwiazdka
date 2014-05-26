@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <map>
 #include <vector>
+#include <queue>
 
 using namespace std;
 
@@ -22,6 +23,7 @@ using namespace std;
 #include "Application.h"
 #include "Resources.h"
 #include "Level.h"
+#include "Node.h"
 
 #define SQUARE_SIZE 10
 
