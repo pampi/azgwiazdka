@@ -111,6 +111,9 @@ void Application::handleKeyEvent()
 		m_clicked = false;
 		m_addCollider = (m_addCollider) ? false : true;
 		break;
+	case sf::Keyboard::V:
+		m_level->drawVisitedNodes(m_level->isDrawingVisitedNodes() ? false : true);
+		break;
 	case sf::Keyboard::Space:
 		//m_pause = (m_pause) ? false : true;
 		m_pause = false;

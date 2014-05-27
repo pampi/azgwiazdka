@@ -28,14 +28,32 @@ public:
 
 	bool hasParent();
 
+	//koszt przejœcia drogi
 	int getGScore(Node *p)
 	{
-		return p->g + ((xPos == p->xPos || yPos == p->yPos) ? 10 : 14);
+		//return p->g + ((xPos == p->xPos || yPos == p->yPos) ? 10 : 14);
+		return 10;
 	}
 
+	//koszt dojœcia do celu wed³ug heurystyki
 	int getHScore(Node *p)
 	{
-		return (abs(p->xPos - xPos) + abs(p->yPos - yPos)) * 10;
+		int xd, yd, d=0;
+		xd = p->xPos - xPos;
+		yd = p->yPos - yPos;
+
+
+		// Euclidian Distance
+		d = static_cast<int>(sqrt(xd*xd + yd*yd));
+
+		// Manhattan distance
+		//d=abs(xd)+abs(yd);
+
+		// Chebyshev distance
+		//d=max(abs(xd), abs(yd));
+
+		//return (abs(p->xPos - xPos) + abs(p->yPos - yPos)) * 10;
+		return d;
 	}
 
 	void computeScores(Node *end)
@@ -47,39 +65,10 @@ public:
 
 	int g, h, f;
 
-	/*inline Node& operator=(const Node& target)
-	{
-		if (*this != target)
-		{
-			xPos = target.xPos;
-			yPos = target.yPos;
-			distance = target.distance;
-		}
-
-		return *this;
-	}*/
-
 	bool operator()(const Node *lhs, const Node *rhs) const
 	{
 		return (lhs->f > rhs->f) ? true : false;
 	}
-
-	/*inline bool operator==(const Node& target) const
-	{
-		return xPos == target.xPos && yPos == target.yPos;
-	}
-
-	inline bool operator!=(const Node& target) const
-	{
-		return !(*this == target);
-	}*/
-
-	/*inline bool operator<(const Node& target) const
-	{
-		//return target.distance < distance;
-		//return target.priority < priority;
-		return target.f < f;
-	}*/
 
 
 	// current position

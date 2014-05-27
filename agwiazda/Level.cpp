@@ -14,6 +14,7 @@ Level::Level(unsigned int width, unsigned int height)
 	m_map = vector<vector<char> >(width, vector<char>(height,Resource::NO_SPRITE));
 	m_nodeMap = vector<vector<class Node> >(width, vector<class Node>(height));
 
+	m_drawVisited = false;
 }
 
 Level::~Level()
@@ -45,12 +46,23 @@ void Level::draw(sf::RenderWindow& wnd, bool renderFinish)
 		}
 }
 
+void Level::drawVisitedNodes(bool enable)
+{
+	m_drawVisited = enable;
+}
+
+bool Level::isDrawingVisitedNodes() const
+{
+	return m_drawVisited;
+}
+
 void Level::tick()
 {
 	removePathFromMap();
 
 	//A* tutaj
 	std::vector<sf::Vector2i> path = calculatePath(m_startPosition.x, m_startPosition.y, m_finishPosition.x, m_finishPosition.y, false);
+	//std::reverse(path.begin(), path.end());
 
 	for (unsigned int i = 0; i < path.size(); i++)
 	{
@@ -150,7 +162,11 @@ std::vector<sf::Vector2i> Level::calculatePath(const int xStart, const int yStar
 					// Get this point
 					child = &m_nodeMap[xp][yp];
 
-					m_map[xp][yp] = Resource::SPR_VISITED;
+					//oznaczamy ¿e odwiedziliœmy ten kawa³ek
+					if (isDrawingVisitedNodes())
+					{
+						m_map[xp][yp] = Resource::SPR_VISITED;
+					}
 
 					// If it's closed or not walkable then pass
 					if (child->closed || !child->walkable)

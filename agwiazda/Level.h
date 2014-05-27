@@ -23,6 +23,9 @@ public:
 	void setFinishPosition(int x, int y);
 	void setCollider(int x, int y);
 	void unsetCollider(int x, int y);
+	void drawVisitedNodes(bool enable);
+
+	bool isDrawingVisitedNodes() const;
 
 private:
 	sf::Vector2i m_startPosition;
@@ -40,6 +43,8 @@ private:
 
 	std::vector< std::vector<class Node> > m_nodeMap;
 	bool isValidLocation(int x, int y);
+
+	bool m_drawVisited;
 };
 
 #endif
