@@ -59,9 +59,9 @@ public:
 		return *this;
 	}*/
 
-	inline bool operator()(const Node &lhs, const Node &rhs) const
+	bool operator()(const Node *lhs, const Node *rhs) const
 	{
-		return (lhs.f > rhs.f) ? true : false;
+		return (lhs->f > rhs->f) ? true : false;
 	}
 
 	/*inline bool operator==(const Node& target) const
@@ -74,12 +74,12 @@ public:
 		return !(*this == target);
 	}*/
 
-	inline bool operator<(const Node& target) const
+	/*inline bool operator<(const Node& target) const
 	{
 		//return target.distance < distance;
 		//return target.priority < priority;
 		return target.f < f;
-	}
+	}*/
 
 
 	// current position

@@ -85,7 +85,7 @@ std::vector<sf::Vector2i> Level::calculatePath(const int xStart, const int yStar
 	Node *child;
 
 	// Define the open and the close list
-	std::priority_queue<Node*> openQ, closedQ;
+	std::priority_queue<Node*, std::vector<Node*>, Node> openQ;// , closedQ;
 
 
 	// Add the start point to the openList
@@ -96,7 +96,7 @@ std::vector<sf::Vector2i> Level::calculatePath(const int xStart, const int yStar
 	unsigned int n = 0;
 
 
-	while (n == 0 || (current != end && n < 500) )
+	while (n == 0 || (current != end && n < 128*72) )
 	{
 
 		// Look for the smallest F value in the openList and make it the current point
@@ -104,7 +104,6 @@ std::vector<sf::Vector2i> Level::calculatePath(const int xStart, const int yStar
 			break;
 
 		current = openQ.top();
-
 
 		// Stop if we reached the end
 		if (current == end)
@@ -117,9 +116,8 @@ std::vector<sf::Vector2i> Level::calculatePath(const int xStart, const int yStar
 		current->opened = false;
 
 		// Add the current point to the closedList
-		closedQ.push(current);
+		//closedQ.push(current);
 		current->closed = true;
-
 
 		// Get all current's adjacent walkable points (inc diagonal)
 		for (int x = -1; x < 2; x++)
@@ -145,7 +143,7 @@ std::vector<sf::Vector2i> Level::calculatePath(const int xStart, const int yStar
 				// Get this point
 				int xp = x + current->xPos;
 				int yp = y + current->yPos;
-				
+			
 
 				if (isValidLocation(xp, yp))
 				{
@@ -176,12 +174,14 @@ std::vector<sf::Vector2i> Level::calculatePath(const int xStart, const int yStar
 					else
 					{
 						// Add it to the openList with current point as parent
-						openQ.push(child);
+						//openQ.push(child);
 						child->opened = true;
 
 						// Compute it's g, h and f score
 						child->parent = current;
 						child->computeScores(end);
+
+						openQ.push(child);
 					}
 
 				} // if validLocation
