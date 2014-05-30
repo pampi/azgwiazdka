@@ -15,6 +15,8 @@ Level::Level(unsigned int width, unsigned int height)
 	m_nodeMap = vector<vector<class Node> >(width, vector<class Node>(height));
 
 	m_drawVisited = false;
+
+	qt = new class CQuadTree(0.0, 0.0, (float)(width*SQUARE_SIZE), (float)(height*SQUARE_SIZE), 0, 2);
 }
 
 Level::~Level()
@@ -34,6 +36,7 @@ void Level::draw(sf::RenderWindow& wnd, bool renderFinish)
 	}
 
 	for (size_t x = 0; x < m_map.size(); x++)
+	{
 		for (size_t y = 0; y < m_map[x].size(); y++)
 		{
 			if (m_map[x][y] != Resource::NO_SPRITE)
@@ -44,6 +47,9 @@ void Level::draw(sf::RenderWindow& wnd, bool renderFinish)
 				wnd.draw(sprite_to_draw);
 			}
 		}
+	}
+
+	qt->debugDraw(wnd);
 }
 
 void Level::drawVisitedNodes(bool enable)
@@ -280,6 +286,7 @@ void Level::setStartPosition(int x, int y)
 	m_startPosition.x = x;
 	m_startPosition.y = y;
 	m_map[x][y] = Resource::SPR_START;
+	qt->addObject(new CollisionObject((float)x, (float)y, 1.0, 1.0, CollisionObject::START));
 }
 
 void Level::setFinishPosition(int x, int y)
@@ -287,6 +294,7 @@ void Level::setFinishPosition(int x, int y)
 	m_finishPosition.x = x;
 	m_finishPosition.y = y;
 	m_map[x][y] = Resource::SPR_FINISH;
+	qt->addObject(new CollisionObject((float)x, (float)y, 1.0, 1.0, CollisionObject::FINISH));
 }
 
 void Level::setCollider(int x, int y)
@@ -294,7 +302,10 @@ void Level::setCollider(int x, int y)
 	if (x < 0 || y < 0 || x >= (int)m_map.size() || y >= (int)m_map[x].size()) return;
 
 	if (m_map[x][y] == Resource::NO_SPRITE && (x != m_finishPosition.x || y != m_finishPosition.y))
+	{
 		m_map[x][y] = Resource::SPR_COLLIDER;
+		qt->addObject(new CollisionObject((float)x, (float)y, 1.0, 1.0, CollisionObject::WALL));
+	}
 }
 
 void Level::unsetCollider(int x, int y)

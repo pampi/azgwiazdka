@@ -40,11 +40,12 @@ private:
 
 	std::vector<std::vector<char> > m_map;	//full resolution map
 
-
 	std::vector< std::vector<class Node> > m_nodeMap;
 	bool isValidLocation(int x, int y);
 
 	bool m_drawVisited;
+
+	class CQuadTree *qt;
 };
 
 #endif

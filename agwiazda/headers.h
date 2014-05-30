@@ -24,6 +24,7 @@ using namespace std;
 #include "Resources.h"
 #include "Level.h"
 #include "Node.h"
+#include "CQuadTree.h"
 
 #define SQUARE_SIZE 10
 
