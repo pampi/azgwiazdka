@@ -14,7 +14,7 @@ public:
 		FINISH,
 	};
 
-	Level(unsigned int width, unsigned int height);
+	Level(unsigned int width, unsigned int height, unsigned int depth = 0);
 	~Level();
 	void draw(sf::RenderWindow& wnd, bool renderFinishTile);
 	void tick();	//calculate new path
@@ -26,6 +26,8 @@ public:
 	void drawVisitedNodes(bool enable);
 
 	bool isDrawingVisitedNodes() const;
+
+	void depthRebuild(std::vector< std::vector<char> >& map);
 
 private:
 	sf::Vector2i m_startPosition;
@@ -46,6 +48,8 @@ private:
 	bool m_drawVisited;
 
 	class CQuadTree *qt;
+	Level *m_subLevel;
+	unsigned int m_depth;
 };
 
 #endif

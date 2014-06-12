@@ -1,6 +1,8 @@
 #include "headers.h"
 
-Level::Level(unsigned int width, unsigned int height)
+#define MAX_DEPTH 2
+
+Level::Level(unsigned int width, unsigned int height, unsigned int depth)
 {
 	m_startPosition.x = 0;
 	m_startPosition.y = 0;
@@ -16,11 +18,17 @@ Level::Level(unsigned int width, unsigned int height)
 
 	m_drawVisited = false;
 
+	m_depth = depth;
 	qt = new class CQuadTree(0.0, 0.0, (float)(width*SQUARE_SIZE), (float)(height*SQUARE_SIZE), 0, 2);
+	if (depth == MAX_DEPTH)
+		m_subLevel = nullptr;
+	else
+		m_subLevel = new Level(width / 2, height / 2, depth + 1);
 }
 
 Level::~Level()
 {
+	delete m_subLevel;
 	m_map.clear();
 }
 
@@ -29,7 +37,10 @@ void Level::draw(sf::RenderWindow& wnd, bool renderFinish)
 	Resource *res = Resource::GetInstance();
 	sf::Sprite sprite_to_draw = res->getSprite(Resource::SPR_FINISH);
 
-	if (renderFinish)
+	if (m_subLevel)
+		m_subLevel->draw(wnd, renderFinish);
+
+	if (renderFinish && m_depth == 0)
 	{
 		sprite_to_draw.setPosition((float)m_finishPosition.x * SQUARE_SIZE, (float)m_finishPosition.y * SQUARE_SIZE);
 		wnd.draw(sprite_to_draw);
@@ -42,7 +53,8 @@ void Level::draw(sf::RenderWindow& wnd, bool renderFinish)
 			if (m_map[x][y] != Resource::NO_SPRITE)
 			{
 				sprite_to_draw = res->getSprite((Resource::SPRITES)m_map[x][y]);
-				sprite_to_draw.setPosition((float)x * SQUARE_SIZE, (float)y * SQUARE_SIZE);
+				sprite_to_draw.setScale(pow(2.0f, (float)m_depth), pow(2.0f, (float)m_depth));
+				sprite_to_draw.setPosition((float)x * SQUARE_SIZE * pow(2.0f, (float)m_depth), (float)y * SQUARE_SIZE * pow(2.0f, (float)m_depth));
 
 				wnd.draw(sprite_to_draw);
 			}
@@ -93,6 +105,12 @@ void Level::removePathFromMap()
 
 std::vector<sf::Vector2i> Level::calculatePath(const int xStart, const int yStart, const int xFinish, const int yFinish, bool allowDiagMovement)
 {
+	if (m_subLevel)
+	{
+		int scale = (int)pow(2.0f, (float)m_depth);
+		printf("Depth(%d) Path len: %d\n", m_depth,m_subLevel->calculatePath(xStart / scale, yStart / scale, xFinish / scale, yFinish / scale, allowDiagMovement).size());
+	}
+
 	prepareNodeMapForAstar();
 	std::vector<sf::Vector2i> path;
 
@@ -305,6 +323,8 @@ void Level::setCollider(int x, int y)
 	{
 		m_map[x][y] = Resource::SPR_COLLIDER;
 		qt->addObject(new CollisionObject((float)x, (float)y, 1.0, 1.0, CollisionObject::WALL));
+
+		m_subLevel->depthRebuild(m_map);
 	}
 }
 
@@ -313,5 +333,37 @@ void Level::unsetCollider(int x, int y)
 	if (x < 0 || y < 0 || x >= (int)m_map.size() || y >= (int)m_map[x].size()) return;
 
 	if (m_map[x][y] == Resource::SPR_COLLIDER && (x != m_finishPosition.x || y != m_finishPosition.y))
+	{
 		m_map[x][y] = Resource::NO_SPRITE;
+
+		m_subLevel->depthRebuild(m_map);
+	}
+}
+
+void Level::depthRebuild(std::vector< std::vector<char> >& map)
+{
+	for (size_t x = 0; x < m_map.size(); x++)
+	{
+		for (size_t y = 0; y < m_map[x].size(); y++)
+		{
+			int counter = 0;
+			
+			if (map[x * 2][y * 2] == Resource::SPR_COLLIDER)
+				counter++;
+			if (map[x * 2 + 1][y * 2] == Resource::SPR_COLLIDER)
+				counter++;
+			if (map[x * 2][y * 2 + 1] == Resource::SPR_COLLIDER)
+				counter++;
+			if (map[x * 2 + 1][y * 2 + 1] == Resource::SPR_COLLIDER)
+				counter++;
+
+			if (counter >= 2)
+				m_map[x][y] = Resource::SPR_COLLIDER;
+			else
+				m_map[x][y] = Resource::NO_SPRITE;
+		}
+	}
+
+	if (m_subLevel)
+		m_subLevel->depthRebuild(m_map);
 }
