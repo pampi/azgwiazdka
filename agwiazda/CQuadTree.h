@@ -33,6 +33,9 @@ public:
 	void clear();
 	void debugDraw(sf::RenderTarget &canvas);
 
+	CQuadTree *getSectorAt(CollisionObject *o);
+	sf::RectangleShape& getSzejp();
+
 
 private:
 	float x;
@@ -48,6 +51,7 @@ private:
 	CQuadTree *NE;
 	CQuadTree *SW;
 	CQuadTree *SE;
+
 
 	sf::RectangleShape shape;
 

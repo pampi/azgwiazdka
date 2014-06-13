@@ -16,7 +16,7 @@ Level::Level(unsigned int width, unsigned int height)
 
 	m_drawVisited = false;
 
-	qt = new class CQuadTree(0.0, 0.0, (float)(width*SQUARE_SIZE), (float)(height*SQUARE_SIZE), 0, 2);
+	qt = new class CQuadTree(0.0, 0.0, (float)(width*SQUARE_SIZE), (float)(height*SQUARE_SIZE), 0, 3);
 }
 
 Level::~Level()
@@ -35,6 +35,8 @@ void Level::draw(sf::RenderWindow& wnd, bool renderFinish)
 		wnd.draw(sprite_to_draw);
 	}
 
+	qt->debugDraw(wnd);
+
 	for (size_t x = 0; x < m_map.size(); x++)
 	{
 		for (size_t y = 0; y < m_map[x].size(); y++)
@@ -49,7 +51,7 @@ void Level::draw(sf::RenderWindow& wnd, bool renderFinish)
 		}
 	}
 
-	qt->debugDraw(wnd);
+	
 }
 
 void Level::drawVisitedNodes(bool enable)
@@ -62,7 +64,7 @@ bool Level::isDrawingVisitedNodes() const
 	return m_drawVisited;
 }
 
-void Level::tick()
+void Level::tick(sf::RenderWindow& wnd)
 {
 	removePathFromMap();
 
@@ -73,7 +75,19 @@ void Level::tick()
 	for (unsigned int i = 0; i < path.size(); i++)
 	{
 		m_map[path[i].x][path[i].y] = Resource::SPR_PATH;
+
+
+
+		// pr0 haXor, kolorowanie sektorów
+		auto o = new CollisionObject((float)path[i].x * SQUARE_SIZE, (float)path[i].y* SQUARE_SIZE, 10, 10);
+		auto w = qt->getSectorAt(o);
+		if (w != nullptr)
+		{
+			w->getSzejp().setFillColor(sf::Color(0,255,0,128));
+		}
 	}
+
+	
 
 }
 

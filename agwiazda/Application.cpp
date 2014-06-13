@@ -53,7 +53,7 @@ void Application::run()
 
 		if (!m_pause)
 		{
-			m_level->tick();	//calculating and moving A*
+			m_level->tick(*m_window);	//calculating and moving A*
 			m_pause = true;
 		}
 		m_level->draw(*m_window, (m_state == SET_COLLIDER) ? true : false);

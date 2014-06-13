@@ -17,7 +17,7 @@ public:
 	Level(unsigned int width, unsigned int height);
 	~Level();
 	void draw(sf::RenderWindow& wnd, bool renderFinishTile);
-	void tick();	//calculate new path
+	void tick(sf::RenderWindow& wnd);	//calculate new path
 
 	void setStartPosition(int x, int y);
 	void setFinishPosition(int x, int y);

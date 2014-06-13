@@ -69,6 +69,7 @@ CQuadTree::CQuadTree(float _x, float _y, float _width, float _height, int _level
 	shape.setFillColor(sf::Color(0, 0, 0, 0));
 	shape.setOutlineThickness(1.0f);
 	shape.setOutlineColor(sf::Color(64, 128, 255));
+	
 
 	if (level == maxLevel) 
 	{
@@ -127,6 +128,42 @@ void CQuadTree::addObject(CollisionObject *cobject)
 	{
 		objects.push_back(cobject);
 	}
+}
+
+CQuadTree* CQuadTree::getSectorAt(CollisionObject *o)
+{
+	if (level == maxLevel)
+	{
+		return this;
+	}
+
+
+	if (contains(NW, o))
+	{
+		NW->getSectorAt(o);
+	}
+	else if (contains(NE, o))
+	{
+		NE->getSectorAt(o);
+	}
+	else if (contains(SW, o))
+	{
+		SW->getSectorAt(o);
+	}
+	else if (contains(SE, o))
+	{
+		SE->getSectorAt(o);
+	}
+	else if (contains(this, o))
+	{
+		return this;
+	}
+
+}
+
+sf::RectangleShape & CQuadTree::getSzejp()
+{
+	return shape;
 }
 
 std::vector<CollisionObject*> CQuadTree::getObjectsAt(float _x, float _y) 
