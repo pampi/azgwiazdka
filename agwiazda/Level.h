@@ -33,13 +33,17 @@ public:
 	void drawVisitedNodes(bool enable);
 	void drawVisitedSectors(bool enable);
 	void changeHeuristic();
+	void changeSectorFill();
 
 	bool isDrawingVisitedNodes() const;
 	bool isDrawingVisitedSectors() const;
+	bool isFillingSectors() const;
 
 	eHeuristic getHeuristic();
 
 	sf::Time getCalculateTime();
+
+	void reset();
 
 private:
 	sf::Vector2i m_startPosition;
@@ -52,6 +56,9 @@ private:
 	std::vector<sf::Vector2i> calculatePath(const int xStart, const int yStart, const int xFinish, const int yFinish, bool allowDiagMovement);
 	void prepareNodeMapForAstar();
 
+	void fillSector(int x, int y);
+	void freeSector(int x, int y);
+
 	std::vector<std::vector<char> > m_map;	//full resolution map
 
 	std::vector< std::vector<class Node> > m_nodeMap;
@@ -59,6 +66,7 @@ private:
 
 	bool m_drawVisitedNodes;
 	bool m_drawVisitedSectors;
+	bool m_fillsector;
 
 	eHeuristic m_heuristic;
 	sf::Clock m_timer;

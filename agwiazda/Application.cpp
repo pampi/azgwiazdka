@@ -11,6 +11,7 @@ Application::Application(int width, int height)
 	m_clicked = false;
 	m_addCollider = true;
 	m_drawMenu = true;
+	m_resetAll = true;
 
 	m_textMenu.setFont(Resource::GetInstance()->getFont());
 	m_textMenu.setColor(sf::Color::White);
@@ -115,11 +116,17 @@ void Application::handleKeyEvent()
 	case sf::Keyboard::R:
 		m_state = SET_START;
 		m_pause = true;
+
 		m_clicked = false;
 		m_addCollider = true;
 
-		delete m_level;
-		m_level = new Level(m_width / SQUARE_SIZE, m_height / SQUARE_SIZE);
+		m_level->reset();
+
+		if (m_resetAll)
+		{
+			delete m_level;
+			m_level = new Level(m_width / SQUARE_SIZE, m_height / SQUARE_SIZE);
+		}
 		break;
 	case sf::Keyboard::T:
 		m_clicked = false;
@@ -133,6 +140,12 @@ void Application::handleKeyEvent()
 		break;
 	case sf::Keyboard::H:
 		m_level->changeHeuristic();
+		break;
+	case sf::Keyboard::F:
+		m_level->changeSectorFill();
+		break;
+	case sf::Keyboard::C:
+		m_resetAll = (m_resetAll) ? false : true;
 		break;
 	case sf::Keyboard::Space:
 		//m_pause = (m_pause) ? false : true;
@@ -227,6 +240,12 @@ void Application::drawMenu()
 			_textHolder += "[T] remove colliders";
 		break;
 	}
+
+	_textHolder += "\n[F] Use sectors: ";
+	_textHolder += (m_level->isFillingSectors()) ? "Y" : "N";
+
+	_textHolder += "\n[C] Leave blocks on reset: ";
+	_textHolder += (m_resetAll) ? "N" : "Y";
 
 	_textHolder += "\nPath found in: ";
 	std::ostringstream oss;

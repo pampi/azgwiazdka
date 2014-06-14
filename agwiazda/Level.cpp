@@ -16,6 +16,7 @@ Level::Level(unsigned int width, unsigned int height)
 
 	m_drawVisitedNodes = false;
 	m_drawVisitedSectors = true;
+	m_fillsector = false;
 
 	qt = new class CQuadTree(0.0, 0.0, (float)(width*SQUARE_SIZE), (float)(height*SQUARE_SIZE), 0, 3);
 
@@ -337,8 +338,15 @@ void Level::setCollider(int x, int y)
 
 	if (m_map[x][y] == Resource::NO_SPRITE && (x != m_finishPosition.x || y != m_finishPosition.y))
 	{
-		m_map[x][y] = Resource::SPR_COLLIDER;
-		qt->addObject(new CollisionObject((float)x, (float)y, 1.0, 1.0, CollisionObject::WALL));
+		if (!m_fillsector)
+		{
+			m_map[x][y] = Resource::SPR_COLLIDER;
+			qt->addObject(new CollisionObject((float)x, (float)y, 1.0, 1.0, CollisionObject::WALL));
+		}
+		else
+		{
+			fillSector(x, y);
+		}
 	}
 }
 
@@ -347,7 +355,16 @@ void Level::unsetCollider(int x, int y)
 	if (x < 0 || y < 0 || x >= (int)m_map.size() || y >= (int)m_map[x].size()) return;
 
 	if (m_map[x][y] == Resource::SPR_COLLIDER && (x != m_finishPosition.x || y != m_finishPosition.y))
-		m_map[x][y] = Resource::NO_SPRITE;
+	{
+		if (!m_fillsector)
+		{
+			m_map[x][y] = Resource::NO_SPRITE;
+		}
+		else
+		{
+			freeSector(x, y);
+		}
+	}
 }
 
 Level::eHeuristic Level::getHeuristic()
@@ -367,4 +384,83 @@ void Level::changeHeuristic()
 sf::Time Level::getCalculateTime()
 {
 	return m_calculateTime;
+}
+
+bool Level::isFillingSectors() const
+{
+	return m_fillsector;
+}
+
+void Level::changeSectorFill()
+{
+	m_fillsector = (m_fillsector) ? false : true;
+
+	if (m_fillsector)
+	{
+		for (int x = 0; x < 128; x++)
+		{
+			for (int y = 0; y < 72; y++)
+			{
+				if (m_map[x][y] == Resource::SPR_COLLIDER)
+					fillSector(x, y);
+			}
+		}
+	}
+}
+
+void Level::fillSector(int x, int y)
+{
+	x /= 16;
+	y /= 9;
+	x *= 16;
+	y *= 9;
+	for (int x1 = 0; x1 < 16; x1++)
+	{
+		for (int y1 = 0; y1 < 9; y1++)
+		{
+			if (m_map[x + x1][y + y1] != Resource::SPR_COLLIDER)
+			{
+				m_map[x + x1][y + y1] = Resource::SPR_COLLIDER;
+				qt->addObject(new CollisionObject((float)(x + x1), (float)(y + y1), 1.0, 1.0, CollisionObject::WALL));
+			}
+		}
+	}
+}
+
+void Level::freeSector(int x, int y)
+{
+	x /= 16;
+	y /= 9;
+	x *= 16;
+	y *= 9;
+	for (int x1 = 0; x1 < 16; x1++)
+	{
+		for (int y1 = 0; y1 < 9; y1++)
+		{
+			if (m_map[x + x1][y + y1] != Resource::SPR_COLLIDER)
+			{
+				m_map[x + x1][y + y1] = Resource::NO_SPRITE;
+				qt->addObject(new CollisionObject((float)(x + x1), (float)(y + y1), 1.0, 1.0, CollisionObject::WALL));
+			}
+		}
+	}
+}
+
+void Level::reset()
+{
+	m_map[m_startPosition.x][m_startPosition.y] = Resource::NO_SPRITE;
+	removePathFromMap();
+	delete qt;
+
+	qt = new class CQuadTree(0.0, 0.0, (float)(m_map.size()*SQUARE_SIZE), (float)(m_map[0].size()*SQUARE_SIZE), 0, 3);
+	for (size_t x = 0; x < m_map.size(); x++)
+	{
+		for (size_t y = 0; y < m_map[0].size(); y++)
+		{
+			if (m_map[x][y] == Resource::SPR_COLLIDER)
+			{
+				qt->addObject(new CollisionObject((float)x, (float)y, 1.0, 1.0, CollisionObject::WALL));
+			}
+		}
+	}
 }

@@ -28,6 +28,7 @@ private:
 	bool m_clicked;
 	bool m_addCollider;
 	bool m_drawMenu;
+	bool m_resetAll;
 
 	STATE m_state;
 
