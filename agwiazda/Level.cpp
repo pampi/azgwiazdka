@@ -449,6 +449,17 @@ void Level::freeSector(int x, int y)
 void Level::reset()
 {
 	m_map[m_startPosition.x][m_startPosition.y] = Resource::NO_SPRITE;
+	m_map[m_finishPosition.x][m_finishPosition.y] = Resource::NO_SPRITE;
+
+	for (auto node : m_nodeMap)
+		node.clear();
+	m_nodeMap.clear();
+	m_nodeMap = vector<vector<class Node> >(m_map.size(), vector<class Node>(m_map[0].size()));
+
+	m_drawVisitedNodes = false;
+	m_drawVisitedSectors = true;
+	m_fillsector = false;
+
 	removePathFromMap();
 	delete qt;
 
