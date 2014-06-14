@@ -145,10 +145,9 @@ void Application::handleKeyEvent()
 		m_level->changeSectorFill();
 		break;
 	case sf::Keyboard::C:
-		m_resetAll = (m_resetAll) ? false : true;
+		m_resetAll = !m_resetAll;
 		break;
 	case sf::Keyboard::Space:
-		//m_pause = (m_pause) ? false : true;
 		m_pause = false;
 		break;
 	case sf::Keyboard::Tab:
@@ -241,7 +240,7 @@ void Application::drawMenu()
 		break;
 	}
 
-	_textHolder += "\n[F] Use sectors: ";
+	_textHolder += "\n[F] Blocking sectors: ";
 	_textHolder += (m_level->isFillingSectors()) ? "Y" : "N";
 
 	_textHolder += "\n[C] Leave blocks on reset: ";

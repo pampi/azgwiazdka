@@ -459,6 +459,7 @@ void Level::reset()
 	m_drawVisitedNodes = false;
 	m_drawVisitedSectors = true;
 	m_fillsector = false;
+	m_calculateTime = sf::Time::Zero;
 
 	removePathFromMap();
 	delete qt;
