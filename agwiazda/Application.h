@@ -27,14 +27,19 @@ private:
 	bool m_pause;
 	bool m_clicked;
 	bool m_addCollider;
+	bool m_drawMenu;
 
 	STATE m_state;
 
 	void handleEvent();
 	void handleKeyEvent();
 	void handleMouseEvent();
+	void drawMenu();
 
 	Level *m_level;
+
+	sf::Text m_textMenu;
+	sf::RectangleShape m_textBackground;
 };
 
 #endif

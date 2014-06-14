@@ -14,6 +14,13 @@ public:
 		FINISH,
 	};
 
+	enum eHeuristic
+	{
+		Euclidian,
+		Manhattan,
+		Chebyshev,
+	};
+
 	Level(unsigned int width, unsigned int height);
 	~Level();
 	void draw(sf::RenderWindow& wnd, bool renderFinishTile);
@@ -24,8 +31,15 @@ public:
 	void setCollider(int x, int y);
 	void unsetCollider(int x, int y);
 	void drawVisitedNodes(bool enable);
+	void drawVisitedSectors(bool enable);
+	void changeHeuristic();
 
 	bool isDrawingVisitedNodes() const;
+	bool isDrawingVisitedSectors() const;
+
+	eHeuristic getHeuristic();
+
+	sf::Time getCalculateTime();
 
 private:
 	sf::Vector2i m_startPosition;
@@ -43,7 +57,12 @@ private:
 	std::vector< std::vector<class Node> > m_nodeMap;
 	bool isValidLocation(int x, int y);
 
-	bool m_drawVisited;
+	bool m_drawVisitedNodes;
+	bool m_drawVisitedSectors;
+
+	eHeuristic m_heuristic;
+	sf::Clock m_timer;
+	sf::Time m_calculateTime;
 
 	class CQuadTree *qt;
 };

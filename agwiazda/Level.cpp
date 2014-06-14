@@ -14,9 +14,12 @@ Level::Level(unsigned int width, unsigned int height)
 	m_map = vector<vector<char> >(width, vector<char>(height,Resource::NO_SPRITE));
 	m_nodeMap = vector<vector<class Node> >(width, vector<class Node>(height));
 
-	m_drawVisited = false;
+	m_drawVisitedNodes = false;
+	m_drawVisitedSectors = true;
 
 	qt = new class CQuadTree(0.0, 0.0, (float)(width*SQUARE_SIZE), (float)(height*SQUARE_SIZE), 0, 3);
+
+	m_heuristic = eHeuristic::Euclidian;
 }
 
 Level::~Level()
@@ -56,12 +59,22 @@ void Level::draw(sf::RenderWindow& wnd, bool renderFinish)
 
 void Level::drawVisitedNodes(bool enable)
 {
-	m_drawVisited = enable;
+	m_drawVisitedNodes = enable;
+}
+
+void Level::drawVisitedSectors(bool enable)
+{
+	m_drawVisitedSectors = enable;
 }
 
 bool Level::isDrawingVisitedNodes() const
 {
-	return m_drawVisited;
+	return m_drawVisitedNodes;
+}
+
+bool Level::isDrawingVisitedSectors() const
+{
+	return m_drawVisitedSectors;
 }
 
 void Level::tick(sf::RenderWindow& wnd)
@@ -79,11 +92,14 @@ void Level::tick(sf::RenderWindow& wnd)
 
 
 		// pr0 haXor, kolorowanie sektorów
-		auto o = new CollisionObject((float)path[i].x * SQUARE_SIZE, (float)path[i].y* SQUARE_SIZE, 10, 10);
-		auto w = qt->getSectorAt(o);
-		if (w != nullptr)
+		if (isDrawingVisitedSectors())
 		{
-			w->getSzejp().setFillColor(sf::Color(0,255,0,128));
+			auto o = new CollisionObject((float)path[i].x * SQUARE_SIZE, (float)path[i].y* SQUARE_SIZE, 10, 10);
+			auto w = qt->getSectorAt(o);
+			if (w != nullptr)
+			{
+				w->getSzejp().setFillColor(sf::Color(0, 255, 0, 128));
+			}
 		}
 	}
 
@@ -110,6 +126,9 @@ std::vector<sf::Vector2i> Level::calculatePath(const int xStart, const int yStar
 	prepareNodeMapForAstar();
 	std::vector<sf::Vector2i> path;
 
+	// prepare clock to measure time
+	m_timer.restart();
+
 	// Define points to work with
 	Node *start = &m_nodeMap[xStart][yStart];
 	Node *end = &m_nodeMap[xFinish][yFinish];
@@ -117,7 +136,7 @@ std::vector<sf::Vector2i> Level::calculatePath(const int xStart, const int yStar
 	Node *child;
 
 	// Define the open and the close list
-	std::priority_queue<Node*, std::vector<Node*>, Node> openQ;// , closedQ;
+	std::priority_queue<Node*, std::vector<Node*>, Node> openQ;
 
 
 	// Add the start point to the openList
@@ -148,7 +167,6 @@ std::vector<sf::Vector2i> Level::calculatePath(const int xStart, const int yStar
 		current->opened = false;
 
 		// Add the current point to the closedList
-		//closedQ.push(current);
 		current->closed = true;
 
 		// Get all current's adjacent walkable points (inc diagonal)
@@ -204,18 +222,17 @@ std::vector<sf::Vector2i> Level::calculatePath(const int xStart, const int yStar
 						{
 							// Change its parent and g score
 							child->parent = current;
-							child->computeScores(end);
+							child->computeScores(end, getHeuristic());
 						}
 					}
 					else
 					{
 						// Add it to the openList with current point as parent
-						//openQ.push(child);
 						child->opened = true;
 
 						// Compute it's g, h and f score
 						child->parent = current;
-						child->computeScores(end);
+						child->computeScores(end, getHeuristic());
 
 						openQ.push(child);
 					}
@@ -231,8 +248,11 @@ std::vector<sf::Vector2i> Level::calculatePath(const int xStart, const int yStar
 	{
 		path.push_back(sf::Vector2i(current->xPos, current->yPos));
 		current = current->parent;
-		n++;
 	}
+
+	//save time elapsed
+	m_calculateTime = m_timer.getElapsedTime();
+
 	return path;
 }
 
@@ -328,4 +348,23 @@ void Level::unsetCollider(int x, int y)
 
 	if (m_map[x][y] == Resource::SPR_COLLIDER && (x != m_finishPosition.x || y != m_finishPosition.y))
 		m_map[x][y] = Resource::NO_SPRITE;
+}
+
+Level::eHeuristic Level::getHeuristic()
+{
+	return m_heuristic;
+}
+
+void Level::changeHeuristic()
+{
+	m_heuristic = static_cast<eHeuristic>( static_cast<int>(m_heuristic) + 1);
+	if (m_heuristic > 2)
+	{
+		m_heuristic = static_cast<eHeuristic>(0);
+	}
+}
+
+sf::Time Level::getCalculateTime()
+{
+	return m_calculateTime;
 }

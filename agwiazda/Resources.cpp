@@ -67,6 +67,12 @@ Resource::Resource()
 	else puts("Could not load texture visited.png!!!");
 
 	delete texture;
+
+
+	if (!m_font.loadFromFile("NinePin.ttf"))
+	{
+		printf("Font not loaded\n");
+	}
 }
 
 Resource::~Resource()
@@ -97,4 +103,9 @@ sf::Sprite &Resource::getSprite(SPRITES s)
 	if (m_sprites.find(s) == m_sprites.end())
 		return (*m_sprites[NO_SPRITE]);
 	return (*m_sprites[s]);
+}
+
+sf::Font &Resource::getFont()
+{
+	return m_font;
 }

@@ -6,27 +6,32 @@
 class Node
 {
 public:
-	Node() : xPos(0), yPos(0), distance(0), priority(0), parent(nullptr), closed(false), opened(false) 
+	Node() : 
+		xPos(0), 
+		yPos(0), 
+		parent(nullptr), 
+		closed(false), 
+		opened(false),
+		walkable(false)
 	{
 		g = h = f = 0;
 	}
 
-	Node(int x, int y, int distance, int priority, bool walkable) : xPos(x), yPos(y), distance(distance), priority(priority), 
-		parent(nullptr), closed(false), opened(false), walkable(walkable)
+	Node(int x, int y, int distance, int priority, bool walkable) : 
+		xPos(x), 
+		yPos(y), 
+		parent(nullptr), 
+		closed(false), 
+		opened(false), 
+		walkable(walkable)
 	{
 		g = h = f = 0;
 	}
 
-
-	// Estimation function for the remaining distance to the goal.
-	// hscore
-	int estimate(int xDest, int yDest);
-
-	void updatePriority(const int xDest, const int yDest);
-
-	void updateDistance();
-
-	bool hasParent();
+	bool hasParent()
+	{
+		return (parent != nullptr);
+	}
 
 	//koszt przejœcia drogi
 	int getGScore(Node *p)
@@ -36,7 +41,7 @@ public:
 	}
 
 	//koszt dojœcia do celu wed³ug heurystyki
-	int getHScore(Node *p)
+	int getHScore(Node *p, Level::eHeuristic _heuristic)
 	{
 		int xd, yd, d=0;
 		xd = p->xPos - xPos;
@@ -44,22 +49,25 @@ public:
 
 
 		// Euclidian Distance
-		d = static_cast<int>(sqrt(xd*xd + yd*yd));
+		if (_heuristic == Level::Euclidian)
+			d = static_cast<int>(sqrt(xd*xd + yd*yd));
 
 		// Manhattan distance
-		//d=abs(xd)+abs(yd);
+		if (_heuristic == Level::Manhattan)
+			d=abs(xd)+abs(yd);
 
 		// Chebyshev distance
-		//d=max(abs(xd), abs(yd));
+		if (_heuristic == Level::Chebyshev)
+			d=max(abs(xd), abs(yd));
 
 		//return (abs(p->xPos - xPos) + abs(p->yPos - yPos)) * 10;
 		return d;
 	}
 
-	void computeScores(Node *end)
+	void computeScores(Node *end, Level::eHeuristic _heuristic)
 	{
 		g = getGScore(parent);
-		h = getHScore(end);
+		h = getHScore(end, _heuristic);
 		f = g + h;
 	}
 
@@ -73,14 +81,6 @@ public:
 
 	// current position
 	int xPos, yPos;
-
-	// total distance already travelled to reach the node
-	// gscore
-	int distance; 
-
-	// priority=level+remaining distance estimate
-	// fscore
-	int priority; // smaller: higher priority
 
 	Node *parent;
 

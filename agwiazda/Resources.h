@@ -27,9 +27,11 @@ public:
 	~Resource();
 	sf::Texture &getTexture(TEXTURES t);
 	sf::Sprite &getSprite(SPRITES s);
+	sf::Font &getFont();
 private:
 	map<TEXTURES, sf::Texture*> m_textures;
 	map<SPRITES, sf::Sprite *> m_sprites;
+	sf::Font m_font;
 };
 
 #endif
